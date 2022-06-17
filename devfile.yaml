@@ -1,0 +1,56 @@
+schemaVersion: 2.1.0
+metadata:
+  name: python-sample
+components:
+  - name: tools
+    container:
+      image: quay.io/devfile/universal-developer-image:ubi8-0e189d9
+      memoryLimit: 3Gi
+      endpoints:
+        - exposure: none
+          name: debug
+          protocol: tcp
+          targetPort: 5005
+        - exposure: public
+          name: 8080-tcp
+          protocol: http
+          targetPort: 8080
+      volumeMounts:
+        - name: m2
+          path: /home/user/.m2
+  - name: m2
+    volume:
+      size: 1G
+commands:
+  - exec:
+      commandLine: pip3 install pipenv --force-reinstall && python3 -m pipenv install --skip-lock --system
+      component: tools
+      group:
+        kind: build
+      label: Install dependencies
+      workingDir: '${PROJECT_SOURCE}'
+    id: install-dependencies
+  - exec:
+      commandLine: python3 -m quanthub_pipeline --install_transformations_only --config ./config.yml --parameters skip
+      component: tools
+      group:
+        kind: build
+      label: Install transformations
+      workingDir: '${PROJECT_SOURCE}'
+    id: install-transformations
+  - exec:
+      commandLine: pip freeze
+      component: tools
+      group:
+        kind: debug
+      label: List dependencies
+      workingDir: '${PROJECT_SOURCE}'
+    id: list-dependencies
+  - exec:
+      commandLine: python3 -m quanthub_pipeline
+      component: tools
+      group:
+        kind: debug
+      label: Run transformation
+      workingDir: '${PROJECT_SOURCE}'
+    id: run
