@@ -1,0 +1,20 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[[source]]
+url="TBD"
+verify_ssl = true
+name = "internal"
+
+[packages]
+pandas = "1.3.2"
+jpype1 = "1.3.0"
+pyyaml = "5.4.1"
+quanthub-pipeline = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.8"
